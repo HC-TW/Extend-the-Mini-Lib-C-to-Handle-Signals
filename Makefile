@@ -7,7 +7,7 @@ CPP = g++
 #  -Wall turns on most, but not all, compiler warnings
 CFLAGS  = -g -Wall 
 # the build target executable:
-TARGET = libmini.so
+TARGET = libmini.so start.o
 
 all: $(TARGET)
 
@@ -18,8 +18,10 @@ libmini.so: libmini64.asm libmini.c
 	$(CC) -c $(CFLAGS) -fno-stack-protector -fPIC -nostdlib libmini.c
 	ld -shared -o $@ libmini64.o libmini.o
 
-test: start.asm test.c
+start.o: start.asm
 	$(ASM) $< -o start.o
+
+test: test.c
 	$(CC) -c $(CFLAGS) -fno-stack-protector -nostdlib -I. -I.. -DUSEMINI test.c
 	ld -m elf_x86_64 --dynamic-linker /lib64/ld-linux-x86-64.so.2 -o $@ test.o start.o -L. -L.. -lmini
 
